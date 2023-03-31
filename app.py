@@ -2,8 +2,13 @@ import os
 import asyncio
 import aiohttp
 import openai
+import logging
 from flask import Flask, render_template, jsonify
 from flask_caching import Cache
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize the OpenAI API client
 openai.api_key = os.environ["OPENAI_API_KEY"]
@@ -32,8 +37,10 @@ async def get_story_details(session, story_id):
         return await response.json()
 
 async def fetch_top_stories():
+    logger.info("Fetching top stories")
+    
     async with aiohttp.ClientSession() as session:
-        story_ids = await get_top_stories(session)
+        story_ids = await get_top_stories()
         story_details = await asyncio.gather(
             *[get_story_details(session, story_id) for story_id in story_ids]
         )
@@ -51,13 +58,16 @@ async def fetch_top_stories():
 
         return stories
 
-async def get_top_stories(session):
-    url = 'https://hacker-news.firebaseio.com/v0/topstories.json'
-    async with session.get(url) as response:
-        story_ids = await response.json()
-        return story_ids[:5]
+async def get_top_stories():
+    url = "https://hacker-news.firebaseio.com/v0/topstories.json"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            story_ids = await response.json()
+            return story_ids[:5]
+
 
 async def generate_image_url(prompt):
+    logger.info(f"Generating image for prompt '{prompt}'")
     try:
         response = openai.Image.create(
             model="image-alpha-001",
@@ -68,7 +78,7 @@ async def generate_image_url(prompt):
         )
         return response['data'][0]['url']
     except Exception as e:
-        print(f"Error generating image for prompt '{prompt}': {e}")
+        logger.error(f"Error generating image for prompt '{prompt}': {e}")
         return None
 
 @app.route('/')
