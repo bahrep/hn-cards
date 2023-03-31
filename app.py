@@ -3,10 +3,23 @@ import asyncio
 import aiohttp
 import openai
 from flask import Flask, render_template, jsonify
+from flask_caching import Cache
 
+# Initialize the OpenAI API client
 openai.api_key = os.environ["OPENAI_API_KEY"]
 
+# Initialize Flask app and cache
 app = Flask(__name__)
+cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+# Fetch the cards at the start of the application
+@app.before_first_request
+def fetch_cards_startup():
+    asyncio.run(fetch_top_stories_and_cache())
+
+async def fetch_top_stories_and_cache():
+    stories = await fetch_top_stories()
+    cache.set("stories", stories, timeout=24 * 60 * 60)
 
 async def get_top_stories(session):
     url = "https://hacker-news.firebaseio.com/v0/topstories.json"
@@ -63,8 +76,10 @@ def index():
     return render_template('index.html')
 
 @app.route('/top_stories')
-async def top_stories():
-    stories = await fetch_top_stories()
+def top_stories():
+    stories = cache.get("stories")
+    if not stories:
+        stories = asyncio.run(fetch_top_stories_and_cache())
     return jsonify(stories)
 
 if __name__ == '__main__':
