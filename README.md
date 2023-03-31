@@ -2,7 +2,7 @@
 
 This web application fetches the 5 most popular submissions from Hacker News (Y Combinator) every day and displays them as Magic The Gathering cards. Each card features an AI-generated image based on the submission's title, using the Dall-E API. The cards are draggable and can be stacked, making for an interactive and modern user interface.
 
-![Application Screenshot](screenshot.png)
+![Application Screenshot](screenshot.gif)
 
 ## Features
 
