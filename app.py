@@ -52,10 +52,10 @@ async def fetch_top_stories():
 
         # Combine story details and image URLs
         stories = [
-            (story['title'], story['url'], image_url)
+            (story['title'], story['url'], image_url,
+             story['score'], story['descendants'])
             for story, image_url in zip(story_details, image_urls)
         ]
-
         return stories
 
 async def get_top_stories():
@@ -90,7 +90,7 @@ def top_stories():
     stories = cache.get("stories")
     if not stories:
         stories = asyncio.run(fetch_top_stories_and_cache())
-    return jsonify(stories)
+    return jsonify([(story[0], story[1], story[2], story[3], story[4]) for story in stories])
 
 if __name__ == '__main__':
     app.run(debug=True)

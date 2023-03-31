@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,7 +24,7 @@
             height: 350px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
-            background:            #fff;
+            background: #fff;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -52,33 +53,76 @@
             font-weight: bold;
             border-radius: 0 0 10px 10px;
         }
+
+        .card-score,
+        .card-comments {
+            position: absolute;
+            font-weight: bold;
+            font-size: 14px;
+            bottom: 10px;
+        }
+
+        .card-score {
+            right: 10px;
+        }
+
+        .card-comments {
+            left: 10px;
+        }
+
+        .card-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background-color: #28a745;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="card-container" id="cards"></div>
     </div>
 
     <script>
-        $(document).ready(function() {
-            $.getJSON('/top_stories', function(stories) {
+        $(document).ready(function () {
+            $.getJSON("/top_stories", function (stories) {
                 for (var i = 0; i < stories.length; i++) {
                     var title = stories[i][0];
                     var link = stories[i][1];
                     var imageUrl = stories[i][2];
+                    var score = stories[i][3];
+                    var comments = stories[i][4];
 
-                    var card = $('<div>').addClass('mtg-card');
-                    var cardImage = $('<img>').addClass('card-image').attr('src', imageUrl);
-                    var cardTitle = $('<div>').addClass('card-title').text(title);
-                    var cardLink = $('<a>').addClass('card-link').attr('href', link).attr('target', '_blank').text('Read More');
+                    var card = $("<div>").addClass("mtg-card");
+                    var cardImage = $("<img>").addClass("card-image").attr("src", imageUrl);
+                    var cardTitle = $("<div>").addClass("card-title").text(title);
+                    var cardLink = $("<a>")
+                        .addClass("card-link")
+                        .attr("href", link)
+                        .attr("target", "_blank");
+                    var cardScore = $("<span>").addClass("card-score").text("Score: " + score);
+                    var cardComments = $("<span>")
+                        .addClass("card-comments")
+                        .text("Comments: " + comments);
+                    var cardBottom = $("<div>").addClass("card-bottom");
 
-                    card.append(cardImage).append(cardTitle).append(cardLink);
-                    $('#cards').append(card);
+                    card.append(cardImage)
+                        .append(cardTitle)
+                        .append(cardScore)
+                        .append(cardComments)
+                        .append(cardBottom)
+                        .append(cardLink);
+                    $("#cards").append(card);
                 }
 
-                $('.mtg-card').draggable();
+                $(".mtg-card").draggable();
             });
         });
+
     </script>
 </body>
+
 </html>
