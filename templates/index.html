@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hacker News Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .mtg-card {
+            position: relative;
+            width: 250px;
+            height: 350px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            background:            #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 50%;
+            object-fit: cover;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            padding: 15px;
+            flex: 1;
+        }
+
+        .card-link {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            background: #007bff;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 0 0 10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card-container" id="cards"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $.getJSON('/top_stories', function(stories) {
+                for (var i = 0; i < stories.length; i++) {
+                    var title = stories[i][0];
+                    var link = stories[i][1];
+                    var imageUrl = stories[i][2];
+
+                    var card = $('<div>').addClass('mtg-card');
+                    var cardImage = $('<img>').addClass('card-image').attr('src', imageUrl);
+                    var cardTitle = $('<div>').addClass('card-title').text(title);
+                    var cardLink = $('<a>').addClass('card-link').attr('href', link).attr('target', '_blank').text('Read More');
+
+                    card.append(cardImage).append(cardTitle).append(cardLink);
+                    $('#cards').append(card);
+                }
+
+                $('.mtg-card').draggable();
+            });
+        });
+    </script>
+</body>
+</html>
